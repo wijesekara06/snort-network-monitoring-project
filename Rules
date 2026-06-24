@@ -1,0 +1,70 @@
+# SYN Scan Detection
+
+alert tcp any any -> $HOME_NET any (
+msg:"PORTSCAN Nmap SYN Scan Detected";
+flags:S;
+detection_filter: track by_src, count 20, seconds 5;
+sid:1000001;
+rev:2;
+)
+
+# NULL Scan Detection
+
+alert tcp any any -> $HOME_NET any (
+msg:"PORTSCAN NULL Scan Detected";
+flags:0;
+sid:1000002;
+rev:2;
+)
+
+# XMAS Scan Detection
+
+alert tcp any any -> $HOME_NET any (
+msg:"PORTSCAN XMAS Scan Detected";
+flags:FPU;
+sid:1000003;
+rev:2;
+)
+
+# ICMP Ping Burst Detection
+
+alert icmp any any -> $HOME_NET any (
+msg:"ICMP Ping Burst Detected";
+itype:8;
+detection_filter: track by_src, count 10, seconds 5;
+sid:1000004;
+rev:2;
+)
+
+# SQLMap User-Agent Detection
+
+alert tcp any any -> $HOME_NET 80 (
+msg:"HTTP Suspicious User-Agent - sqlmap";
+flow:to_server,established;
+content:"sqlmap";
+http_header;
+sid:1000005;
+rev:1;
+)
+
+# SQL Injection Detection
+
+alert tcp any any -> $HOME_NET 80 (
+msg:"HTTP SQL Injection Attempt";
+flow:to_server,established;
+content:"' OR 1=1";
+http_uri;
+sid:1000006;
+rev:1;
+)
+
+# Directory Traversal Detection
+
+alert tcp any any -> $HOME_NET 80 (
+msg:"HTTP Directory Traversal Attempt";
+flow:to_server,established;
+content:"../";
+http_uri;
+sid:1000007;
+rev:1;
+)
